@@ -42,6 +42,26 @@ overflow:hidden;
 box-shadow:0 25px 80px rgba(0,0,0,0.6);
 }
 
+/* Instagram進行バー */
+
+.progress-container{
+position:absolute;
+top:10px;
+left:12px;
+right:12px;
+height:3px;
+background:rgba(255,255,255,0.25);
+border-radius:3px;
+overflow:hidden;
+z-index:5;
+}
+
+.progress{
+height:100%;
+width:0%;
+background:white;
+}
+
 /* 表紙 */
 
 .cover{
@@ -49,13 +69,13 @@ position:absolute;
 width:100%;
 height:100%;
 object-fit:cover;
-animation:zoom 20s ease-in-out infinite alternate;
+animation:zoom 25s ease-in-out infinite alternate;
 filter:brightness(0.65);
 }
 
 @keyframes zoom{
 0%{transform:scale(1)}
-100%{transform:scale(1.15)}
+100%{transform:scale(1.12)}
 }
 
 /* グラデーション */
@@ -66,9 +86,9 @@ width:100%;
 height:100%;
 background:linear-gradient(
 to top,
-rgba(0,0,0,0.8),
-rgba(0,0,0,0.3),
-rgba(0,0,0,0.2)
+rgba(0,0,0,0.85),
+rgba(0,0,0,0.35),
+rgba(0,0,0,0.25)
 );
 }
 
@@ -76,7 +96,7 @@ rgba(0,0,0,0.2)
 
 .text{
 position:absolute;
-bottom:120px;
+bottom:140px;
 left:28px;
 right:28px;
 color:white;
@@ -85,24 +105,44 @@ color:white;
 .phrase{
 font-family:'Noto Serif JP',serif;
 font-size:1.6rem;
-line-height:1.7;
+line-height:1.8;
 letter-spacing:1px;
-text-shadow:0 3px 10px rgba(0,0,0,0.8);
+text-shadow:0 4px 14px rgba(0,0,0,0.9);
+min-height:120px;
 }
 
 .book{
-margin-top:16px;
-font-size:0.9rem;
+margin-top:18px;
+font-size:0.95rem;
 opacity:0.85;
 }
 
-/* いいねボタン */
+/* 続きを読む */
+
+.readmore{
+margin-top:18px;
+display:inline-block;
+padding:8px 16px;
+border-radius:20px;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(10px);
+color:white;
+font-size:0.9rem;
+text-decoration:none;
+transition:0.2s;
+}
+
+.readmore:hover{
+background:rgba(255,255,255,0.3);
+}
+
+/* いいね */
 
 .like{
 position:absolute;
 right:18px;
-bottom:140px;
-font-size:28px;
+bottom:160px;
+font-size:30px;
 cursor:pointer;
 transition:transform 0.2s;
 }
@@ -110,24 +150,6 @@ transition:transform 0.2s;
 .like.liked{
 color:#ff2d55;
 transform:scale(1.3);
-}
-
-/* パーティクル */
-
-.particle{
-position:absolute;
-width:2px;
-height:2px;
-background:white;
-opacity:0.2;
-border-radius:50%;
-animation:float 12s linear infinite;
-}
-
-@keyframes float{
-0%{transform:translateY(0);opacity:0}
-30%{opacity:0.3}
-100%{transform:translateY(-800px);opacity:0}
 }
 
 </style>
@@ -139,6 +161,10 @@ animation:float 12s linear infinite;
 
 <div class="reel" id="reel">
 
+<div class="progress-container">
+<div class="progress"></div>
+</div>
+
 <img class="cover">
 
 <div class="overlay"></div>
@@ -148,6 +174,10 @@ animation:float 12s linear infinite;
 <div class="phrase"></div>
 
 <div class="book"></div>
+
+<a class="readmore" target="_blank" style="display:none">
+続きを読む →
+</a>
 
 </div>
 
@@ -161,9 +191,6 @@ const GAS_URL="https://script.google.com/macros/s/AKfycbxgAgU-eGGnxih0eGjPz22EIX
 
 let phrases=[]
 let index=0
-let timer
-
-/* データ取得 */
 
 async function loadData(){
 
@@ -172,11 +199,7 @@ phrases=await res.json()
 
 showPhrase()
 
-timer=setInterval(nextPhrase,3000)
-
 }
-
-/* 表示 */
 
 function showPhrase(){
 
@@ -191,9 +214,36 @@ typeText(item.phrase)
 document.querySelector(".book").textContent=
 `${item.book} / ${item.author}`
 
+/* 続きを読む */
+
+const readBtn=document.querySelector(".readmore")
+
+if(item.link){
+
+readBtn.href=item.link
+readBtn.style.display="inline-block"
+
+}else{
+
+readBtn.style.display="none"
+
 }
 
-/* タイプライター */
+/* 進行バー */
+
+const progress=document.querySelector(".progress")
+
+progress.style.transition="none"
+progress.style.width="0%"
+
+setTimeout(()=>{
+progress.style.transition="width 6s linear"
+progress.style.width="100%"
+},50)
+
+}
+
+/* タイピング */
 
 function typeText(text){
 
@@ -211,7 +261,7 @@ el.textContent+=text.charAt(i)
 
 i++
 
-setTimeout(typing,40)
+setTimeout(typing,120)
 
 }
 
@@ -220,8 +270,6 @@ setTimeout(typing,40)
 typing()
 
 }
-
-/* 次 */
 
 function nextPhrase(){
 
@@ -233,31 +281,53 @@ showPhrase()
 
 }
 
+function prevPhrase(){
+
+index--
+
+if(index<0) index=phrases.length-1
+
+showPhrase()
+
+}
+
+/* タップ操作 */
+
+const reel=document.getElementById("reel")
+
+reel.addEventListener("click",(e)=>{
+
+const rect=reel.getBoundingClientRect()
+
+const x=e.clientX-rect.left
+
+if(x>rect.width/2){
+
+nextPhrase()
+
+}else{
+
+prevPhrase()
+
+}
+
+})
+
 /* スワイプ */
 
 let startY=0
 
-const reel=document.getElementById("reel")
-
 reel.addEventListener("touchstart",e=>{
-
 startY=e.touches[0].clientY
-
 })
 
 reel.addEventListener("touchend",e=>{
 
 let endY=e.changedTouches[0].clientY
 
-if(startY-endY>50){
+if(startY-endY>60) nextPhrase()
 
-nextPhrase()
-
-clearInterval(timer)
-
-timer=setInterval(nextPhrase,3000)
-
-}
+if(endY-startY>60) prevPhrase()
 
 })
 
@@ -270,26 +340,6 @@ like.addEventListener("click",()=>{
 like.classList.toggle("liked")
 
 })
-
-/* パーティクル */
-
-for(let i=0;i<40;i++){
-
-const p=document.createElement("div")
-
-p.className="particle"
-
-p.style.left=Math.random()*100+"%"
-
-p.style.bottom="-10px"
-
-p.style.animationDelay=Math.random()*10+"s"
-
-p.style.animationDuration=(8+Math.random()*10)+"s"
-
-document.body.appendChild(p)
-
-}
 
 loadData()
 
