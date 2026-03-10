@@ -194,35 +194,44 @@ const GAS_URL="https://script.google.com/macros/s/AKfycbxgAgU-eGGnxih0eGjPz22EIX
 let phrases=[]
 let index=0
 
+/* データ取得（キャッシュ防止） */
+
 async function loadData(){
 
-const res=await fetch(GAS_URL)
-phrases=await res.json()
+const res = await fetch(GAS_URL + "?t=" + Date.now())
+
+phrases = await res.json()
 
 showPhrase()
 
 }
 
+/* 表示 */
+
 function showPhrase(){
 
-const item=phrases[index]
+const item = phrases[index]
 
-document.querySelector(".cover").src=item.cover
-document.querySelector(".background").style.backgroundImage=`url(${item.cover})`
+document.querySelector(".cover").src = item.cover
 
-const phraseEl=document.querySelector(".phrase")
-phraseEl.textContent=item.phrase
-phraseEl.style.fontSize="26px"
+document.querySelector(".background").style.backgroundImage = `url(${item.cover})`
+
+const phraseEl = document.querySelector(".phrase")
+
+phraseEl.textContent = item.phrase
+phraseEl.style.fontSize = "26px"
 
 adjustFontSize()
 
-document.querySelector(".book").textContent=
+document.querySelector(".book").textContent =
 `${item.book} / ${item.author}`
 
-const readBtn=document.querySelector(".readmore")
+/* 続きを読む */
 
-if(item.link){
-readBtn.href=item.link
+const readBtn = document.querySelector(".readmore")
+
+if(item.notion){
+readBtn.href = item.notion
 readBtn.style.display="inline-block"
 }else{
 readBtn.style.display="none"
@@ -231,6 +240,7 @@ readBtn.style.display="none"
 /* 進行バー */
 
 const progress=document.querySelector(".progress")
+
 progress.style.width="0%"
 
 setTimeout(()=>{
