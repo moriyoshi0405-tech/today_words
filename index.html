@@ -19,8 +19,6 @@ font-family:'Inter',sans-serif;
 overflow:hidden;
 }
 
-/* 背景 */
-
 .background{
 position:absolute;
 width:100%;
@@ -31,8 +29,6 @@ filter:blur(35px) brightness(0.35);
 transform:scale(1.2);
 }
 
-/* リール */
-
 .reel{
 position:relative;
 width:340px;
@@ -41,8 +37,6 @@ border-radius:28px;
 overflow:hidden;
 box-shadow:0 25px 80px rgba(0,0,0,0.6);
 }
-
-/* 進行バー */
 
 .progress-container{
 position:absolute;
@@ -63,8 +57,6 @@ background:white;
 transition:width 6s linear;
 }
 
-/* 表紙 */
-
 .cover{
 position:absolute;
 width:100%;
@@ -79,8 +71,6 @@ filter:brightness(0.65);
 100%{transform:scale(1.12)}
 }
 
-/* グラデーション */
-
 .overlay{
 position:absolute;
 width:100%;
@@ -92,8 +82,6 @@ rgba(0,0,0,0.35),
 rgba(0,0,0,0.25)
 );
 }
-
-/* テキスト */
 
 .text{
 position:absolute;
@@ -119,8 +107,6 @@ font-size:0.95rem;
 opacity:0.85;
 }
 
-/* 続きを読む */
-
 .readmore{
 margin-top:18px;
 display:inline-block;
@@ -137,8 +123,6 @@ transition:0.2s;
 .readmore:hover{
 background:rgba(255,255,255,0.3);
 }
-
-/* いいね */
 
 .like{
 position:absolute;
@@ -194,50 +178,44 @@ const GAS_URL="https://script.google.com/macros/s/AKfycbxgAgU-eGGnxih0eGjPz22EIX
 let phrases=[]
 let index=0
 
-/* データ取得（キャッシュ防止） */
-
 async function loadData(){
 
 const res = await fetch(GAS_URL + "?t=" + Date.now())
 
 phrases = await res.json()
 
+index = Math.floor(Math.random() * phrases.length)
+
 showPhrase()
 
 }
-
-/* 表示 */
 
 function showPhrase(){
 
 const item = phrases[index]
 
-document.querySelector(".cover").src = item.cover
+document.querySelector(".cover").src=item.cover
 
-document.querySelector(".background").style.backgroundImage = `url(${item.cover})`
+document.querySelector(".background").style.backgroundImage=`url(${item.cover})`
 
-const phraseEl = document.querySelector(".phrase")
+const phraseEl=document.querySelector(".phrase")
 
-phraseEl.textContent = item.phrase
-phraseEl.style.fontSize = "26px"
+phraseEl.textContent=item.phrase
+phraseEl.style.fontSize="26px"
 
 adjustFontSize()
 
-document.querySelector(".book").textContent =
+document.querySelector(".book").textContent=
 `${item.book} / ${item.author}`
 
-/* 続きを読む */
-
-const readBtn = document.querySelector(".readmore")
+const readBtn=document.querySelector(".readmore")
 
 if(item.notion){
-readBtn.href = item.notion
+readBtn.href=item.notion
 readBtn.style.display="inline-block"
 }else{
 readBtn.style.display="none"
 }
-
-/* 進行バー */
 
 const progress=document.querySelector(".progress")
 
@@ -248,8 +226,6 @@ progress.style.width="100%"
 },50)
 
 }
-
-/* 文字サイズ自動調整 */
 
 function adjustFontSize(){
 
@@ -267,8 +243,6 @@ el.style.fontSize=fontSize+"px"
 
 }
 
-/* 次 */
-
 function nextPhrase(){
 
 index++
@@ -279,8 +253,6 @@ showPhrase()
 
 }
 
-/* 前 */
-
 function prevPhrase(){
 
 index--
@@ -290,8 +262,6 @@ if(index<0) index=phrases.length-1
 showPhrase()
 
 }
-
-/* タップ */
 
 const reel=document.getElementById("reel")
 
@@ -309,8 +279,6 @@ prevPhrase()
 
 })
 
-/* スワイプ */
-
 let startY=0
 
 reel.addEventListener("touchstart",e=>{
@@ -325,8 +293,6 @@ if(startY-endY>60) nextPhrase()
 if(endY-startY>60) prevPhrase()
 
 })
-
-/* いいね */
 
 const like=document.querySelector(".like")
 
