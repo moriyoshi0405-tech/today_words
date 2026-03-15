@@ -124,6 +124,8 @@ transition:0.2s;
 background:rgba(255,255,255,0.3);
 }
 
+/* いいね */
+
 .like{
 position:absolute;
 right:18px;
@@ -136,6 +138,26 @@ transition:transform 0.2s;
 .like.liked{
 color:#ff2d55;
 transform:scale(1.3);
+}
+
+/* 矢印 */
+
+.arrow{
+position:absolute;
+top:50%;
+transform:translateY(-50%);
+font-size:36px;
+color:rgba(255,255,255,0.35);
+pointer-events:none;
+user-select:none;
+}
+
+.arrow.left{
+left:14px;
+}
+
+.arrow.right{
+right:14px;
 }
 
 </style>
@@ -162,18 +184,21 @@ transform:scale(1.3);
 <div class="book"></div>
 
 <a class="readmore" target="_blank" style="display:none">
-続きを読む →
+感想記事を読む →
 </a>
 
 </div>
 
 <div class="like">❤</div>
 
+<div class="arrow left">‹</div>
+<div class="arrow right">›</div>
+
 </div>
 
 <script>
 
-const GAS_URL="https://script.google.com/macros/s/AKfycbxgAgU-eGGnxih0eGjPz22EIX1NQddgnAFsbzDOfcyfx6V-dYXiDDmEsPqT3WV0bkyTfA/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbxmmpfjydLn3W-JwDAUNb49d7nHR0VtnsbXQyUgqkTdZGt6GK5Mzgp126HIar4S_bfugw/exec";
 
 let phrases=[]
 let index=0
@@ -210,8 +235,8 @@ document.querySelector(".book").textContent=
 
 const readBtn=document.querySelector(".readmore")
 
-if(item.notion){
-readBtn.href=item.notion
+if(item.review){
+readBtn.href=item.review
 readBtn.style.display="inline-block"
 }else{
 readBtn.style.display="none"
